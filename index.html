@@ -29,21 +29,6 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Theme Toggle -->
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Theme">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 3c.132 0 .263 0 .393.007a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 2.999z"/>
-          </svg>
-        </button>
-
-        <!-- Cart Trigger -->
-        <button class="cart-trigger" id="cart-trigger" aria-label="View Cart">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-          </svg>
-          <span class="cart-count" id="cart-count">0</span>
-        </button>
-
         <!-- Patient Portal button -->
         <button class="btn btn-secondary" id="portal-trigger">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -570,7 +555,7 @@
           <!-- Step 1: Visit Type & Specialty -->
           <div class="step-pane active" data-step="1">
             <h4 style="margin-bottom: 15px; text-align: center;">Select Appointment Type</h4>
-            <div class="option-select-grid">
+            <div class="option-select-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
               <div class="select-card active" data-value="clinic" data-group="visit-type">
                 <span>🏥</span>
                 <h4>Noida Clinic Visit</h4>
@@ -581,9 +566,14 @@
                 <h4>Video Consultation</h4>
                 <p>Consult securely from home</p>
               </div>
+              <div class="select-card" data-value="diagnostics" data-group="visit-type">
+                <span>🔬</span>
+                <h4>Home Lab Sample</h4>
+                <p>Home collection diagnostics</p>
+              </div>
             </div>
 
-            <div class="form-field">
+            <div class="form-field" id="specialty-field">
               <label for="consult-specialty">Clinical Department / Specialty</label>
               <select class="form-input" id="consult-specialty">
                 <option value="General Physician">General Physician (Dr. Vaibhav)</option>
@@ -593,6 +583,11 @@
                 <option value="Gynecology">Gynecology (Women's Health)</option>
                 <option value="Orthopedics">Orthopedics (Bone & Joint)</option>
               </select>
+            </div>
+
+            <div class="form-field" id="diagnostics-field" style="display: none;">
+              <label for="consult-test">Selected Diagnostic Test / Package</label>
+              <input type="text" class="form-input" id="consult-test" readonly style="background-color: var(--secondary-bg); font-weight: 600; color: var(--primary);">
             </div>
             <button type="button" class="btn btn-primary next-step-btn" style="float: right;">Next Step</button>
           </div>
@@ -663,7 +658,7 @@
               <div class="summary-row"><span>Specialty:</span><span id="confirm-specialty">General Physician</span></div>
               <div class="summary-row"><span>Type:</span><span id="confirm-type">Noida Clinic Visit</span></div>
               <div class="summary-row"><span>Date & Slot:</span><span id="confirm-slot">June 15, 2026 at 11:00 AM</span></div>
-              <div class="summary-row"><span>Consultation Fee:</span><strong>₹500</strong></div>
+              <div class="summary-row"><span id="confirm-fee-label">Consultation Fee:</span><strong id="confirm-fee">₹500</strong></div>
             </div>
 
             <button type="button" class="btn btn-primary" id="consult-success-close-btn" style="width: 100%;">Close Wizard</button>
@@ -673,73 +668,7 @@
     </div>
   </div>
 
-  <!-- DRAWER: Diagnostic Cart Sidebar -->
-  <div class="modal-overlay" id="cart-overlay"></div>
-  <div class="cart-drawer" id="cart-drawer">
-    <div class="cart-header-row">
-      <h3>Diagnostics Cart (<span id="cart-title-count">0</span>)</h3>
-      <button class="modal-close-btn" id="cart-close-btn">&times;</button>
-    </div>
 
-    <!-- Items List -->
-    <div class="cart-list" id="cart-items-list">
-      <div style="text-align: center; color: var(--text-muted); margin-top: 40px;" id="empty-cart-msg">
-        <span style="font-size: 3rem; display: block; margin-bottom: 12px;">🛒</span>
-        Your cart is empty. Search and add diagnostic tests or packages.
-      </div>
-    </div>
-
-    <!-- Checkout Details Footer -->
-    <div class="cart-checkout-footer">
-      <div id="cart-has-items-box" style="display: none;">
-        <!-- Collection selection -->
-        <div class="form-field" style="margin-bottom: 16px;">
-          <label for="cart-collection-type">Sample Collection Mode</label>
-          <select class="form-input" id="cart-collection-type" style="padding: 8px 12px;">
-            <option value="home">Home Sample Collection (Free)</option>
-            <option value="walkin">Walk-in at Noida Main Lab</option>
-          </select>
-        </div>
-
-        <div class="form-field" style="margin-bottom: 16px;">
-          <label for="cart-address">Home Address</label>
-          <input type="text" class="form-input" id="cart-address" placeholder="Flat, Street, Area" style="padding: 8px 12px;">
-        </div>
-
-        <div class="form-group-row" style="margin-bottom: 16px; gap: 10px;">
-          <div class="form-field" style="margin-bottom: 0;">
-            <label for="cart-date">Preferred Date</label>
-            <input type="date" class="form-input" id="cart-date" style="padding: 8px 12px;">
-          </div>
-          <div class="form-field" style="margin-bottom: 0;">
-            <label for="cart-time">Preferred Time</label>
-            <select class="form-input" id="cart-time" style="padding: 8px 12px;">
-              <option value="07:00 AM - 09:00 AM">07:00 AM - 09:00 AM (Fasting)</option>
-              <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
-              <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
-            <span>Subtotal:</span>
-            <span id="cart-subtotal">₹0</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
-            <span>Home Collection:</span>
-            <span style="color: var(--primary); font-weight: 600;">FREE</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 10px;">
-            <span>Total Payable:</span>
-            <span id="cart-total">₹0</span>
-          </div>
-        </div>
-
-        <button class="btn btn-primary" id="cart-checkout-btn" style="width: 100%; justify-content: center;">Place Diagnostic Order</button>
-      </div>
-    </div>
-  </div>
 
   <!-- MODAL: Patient Portal Dashboard -->
   <div class="modal-overlay" id="portal-modal">

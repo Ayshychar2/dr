@@ -149,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupHeroSlider();
   setupTestimonialSlider();
   setupEventListeners();
-  updateCartBadge();
   
   // Set date limits
   const tomorrow = new Date();
@@ -158,9 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const consultDateInput = document.getElementById('consult-date');
   if (consultDateInput) consultDateInput.min = tomorrowStr;
-  
-  const cartDateInput = document.getElementById('cart-date');
-  if (cartDateInput) cartDateInput.min = tomorrowStr;
 });
 
 // Render package grids with improved pricing indicators
@@ -200,7 +196,7 @@ function renderWellnessPackages() {
         </div>
         <div class="pkg-bottom-row" style="margin-top: 6px;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Free Home Sample Visit</span>
-          <button class="btn btn-primary add-pkg-cart-btn" data-id="${pkg.id}" style="padding: 8px 18px; font-size: 0.85rem;">Add to Cart</button>
+          <button class="btn btn-primary add-pkg-cart-btn" data-id="${pkg.id}" style="padding: 8px 18px; font-size: 0.85rem;">Book Package</button>
         </div>
       </div>
     </div>
@@ -225,7 +221,7 @@ function renderIndividualTests(category) {
       </div>
       <div class="tli-price-row">
         <span class="tli-price">₹${t.price}</span>
-        <button class="btn btn-secondary add-test-cart-btn" data-id="${t.id}" style="padding: 6px 14px; font-size:0.8rem;">+ Add</button>
+        <button class="btn btn-secondary add-test-cart-btn" data-id="${t.id}" style="padding: 6px 14px; font-size:0.8rem;">Book Test</button>
       </div>
     </div>
   `).join('');
@@ -549,17 +545,17 @@ function setupEventListeners() {
     });
   });
 
-  // Delegated additions to cart
+  // Delegated booking triggers for packages and tests
   document.body.addEventListener('click', (e) => {
     if (e.target.classList.contains('add-pkg-cart-btn')) {
       const pkgId = e.target.dataset.id;
       const pkg = DIAGNOSTIC_PACKAGES.find(p => p.id === pkgId);
-      addItemToCart(pkg);
+      openDiagnosticsBooking(pkg);
     }
     if (e.target.classList.contains('add-test-cart-btn')) {
       const testId = e.target.dataset.id;
       const test = INDIVIDUAL_TESTS.find(t => t.id === testId);
-      addItemToCart(test);
+      openDiagnosticsBooking(test);
     }
   });
 
@@ -654,13 +650,14 @@ function setupEventListeners() {
   if (uploadConfirmBtn) {
     uploadConfirmBtn.addEventListener('click', () => {
       const cbc = INDIVIDUAL_TESTS.find(t => t.id === 'test-cbc');
-      const vitd = INDIVIDUAL_TESTS.find(t => t.id === 'test-vitd');
-      if (cbc) addItemToCart(cbc);
-      if (vitd) addItemToCart(vitd);
-      
       closePrescriptionModal();
-      showToast('Prescription analysed! Recommended tests (CBC, Vitamin D) added to cart.', 'success');
-      toggleCart();
+      
+      if (cbc) {
+        showToast('Prescription analysed! Preselected recommended test: Complete Blood Count (CBC).', 'success');
+        openDiagnosticsBooking(cbc);
+      } else {
+        showToast('Prescription analysed successfully!', 'success');
+      }
     });
   }
 
@@ -768,13 +765,13 @@ function setupAutocompleteSearch() {
     } else if (type === 'package') {
       const id = item.dataset.id;
       const pkg = DIAGNOSTIC_PACKAGES.find(p => p.id === id);
-      addItemToCart(pkg);
+      openDiagnosticsBooking(pkg);
       dropdown.style.display = 'none';
       input.value = '';
     } else if (type === 'test') {
       const id = item.dataset.id;
       const test = INDIVIDUAL_TESTS.find(t => t.id === id);
-      addItemToCart(test);
+      openDiagnosticsBooking(test);
       dropdown.style.display = 'none';
       input.value = '';
     }
@@ -789,120 +786,60 @@ function setupAutocompleteSearch() {
 }
 
 // ==========================================
-// CART CALCULATORS
+// DIAGNOSTIC BOOKING HELPERS
 // ==========================================
 
-function addItemToCart(item) {
-  const exists = cart.some(cartItem => cartItem.id === item.id);
-  if (exists) {
-    showToast(`"${item.name}" is already in your diagnostics cart!`, 'info');
-    return;
-  }
+function openDiagnosticsBooking(item) {
+  consultData.visitType = 'diagnostics';
+  consultData.specialty = 'General Physician'; // default
   
-  cart.push(item);
-  updateCartBadge();
-  showToast(`"${item.name}" added to diagnostics cart!`, 'success');
+  // Select diagnostics card in modal
+  const modal = document.getElementById('consult-modal');
+  modal.querySelectorAll('[data-group="visit-type"]').forEach(c => {
+    if (c.dataset.value === 'diagnostics') c.classList.add('active');
+    else c.classList.remove('active');
+  });
+  
+  // Fill test/package name
+  const diagnosticsField = document.getElementById('diagnostics-field');
+  const specialtyField = document.getElementById('specialty-field');
+  const consultTest = document.getElementById('consult-test');
+  
+  if (diagnosticsField) diagnosticsField.style.display = 'block';
+  if (specialtyField) specialtyField.style.display = 'none';
+  if (consultTest) consultTest.value = item.name;
+  
+  // Update slot dropdown options
+  updateSlotOptions('diagnostics');
+  
+  // Reset wizard steps
+  consultStep = 1;
+  goToStep(1);
+  
+  // Show modal
+  modal.classList.add('active');
 }
 
-function removeItemFromCart(id) {
-  cart = cart.filter(item => item.id !== id);
-  updateCartBadge();
-  renderCart();
-  showToast('Item removed from cart.', 'info');
-}
-
-function renderCart() {
-  const list = document.getElementById('cart-items-list');
-  const checkoutFooter = document.getElementById('cart-has-items-box');
+function updateSlotOptions(visitType) {
+  const slotSelect = document.getElementById('consult-slot');
+  if (!slotSelect) return;
   
-  if (cart.length === 0) {
-    list.innerHTML = `
-      <div style="text-align: center; color: var(--text-muted); margin-top: 40px;" id="empty-cart-msg">
-        <span style="font-size: 3rem; display: block; margin-bottom: 12px;">🛒</span>
-        Your cart is empty. Search and add diagnostic tests or packages.
-      </div>
+  if (visitType === 'diagnostics') {
+    slotSelect.innerHTML = `
+      <option value="07:00 AM - 09:00 AM">07:00 AM - 09:00 AM (Fasting)</option>
+      <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
+      <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
     `;
-    checkoutFooter.style.display = 'none';
-    return;
+  } else {
+    slotSelect.innerHTML = `
+      <option value="09:00 AM - 10:00 AM">09:00 AM - 10:00 AM (Morning slots)</option>
+      <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
+      <option value="02:00 PM - 03:00 PM">02:00 PM - 03:00 PM (Afternoon slots)</option>
+      <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
+      <option value="06:00 PM - 07:00 PM">06:00 PM - 07:00 PM (Evening slots)</option>
+    `;
   }
-  
-  checkoutFooter.style.display = 'block';
-  
-  list.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <div class="ci-info">
-        <h4>${item.name}</h4>
-        <span>${item.testCount ? `${item.testCount} parameters` : 'Individual lab analysis'}</span>
-      </div>
-      <div class="ci-actions">
-        <strong style="font-size: 1rem; color:var(--text-main);">₹${item.price}</strong>
-        <button class="ci-remove-btn" onclick="removeItemFromCart('${item.id}')" aria-label="Remove item">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  `).join('');
-  
-  const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-  document.getElementById('cart-subtotal').textContent = `₹${subtotal}`;
-  document.getElementById('cart-total').textContent = `₹${subtotal}`;
-  
-  const dateInput = document.getElementById('cart-date');
-  if (dateInput && !dateInput.value) {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    dateInput.value = tomorrow.toISOString().split('T')[0];
-  }
-  
-  const checkoutBtn = document.getElementById('cart-checkout-btn');
-  checkoutBtn.onclick = () => {
-    const address = document.getElementById('cart-address').value.trim();
-    const collectionType = document.getElementById('cart-collection-type').value;
-    const date = dateInput.value;
-    const time = document.getElementById('cart-time').value;
-    
-    if (collectionType === 'home' && !address) {
-      showToast('Please enter your sample collection address!', 'info');
-      return;
-    }
-    
-    const bookingId = `LAB-${Math.floor(1000 + Math.random() * 9000)}`;
-    const testNames = cart.map(item => item.name);
-    const totalPrice = subtotal;
-    
-    const newBooking = {
-      id: bookingId,
-      type: 'diagnostics',
-      tests: testNames,
-      date: date,
-      time: time,
-      price: totalPrice,
-      status: collectionType === 'home' ? 'Phlebotomist Assigned' : 'Walk-in Pending'
-    };
-    
-    bookings.push(newBooking);
-    cart = [];
-    updateCartBadge();
-    
-    document.getElementById('cart-drawer').classList.remove('active');
-    document.getElementById('cart-overlay').classList.remove('active');
-    
-    showToast(`Order Placed! Check details under your Patient Portal. Booking ID: ${bookingId}`, 'success');
-    
-    setTimeout(() => {
-      document.getElementById('portal-modal').classList.add('active');
-      document.querySelectorAll('.ps-menu-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector('[data-target="portal-bookings"]').classList.add('active');
-      document.querySelectorAll('.portal-view-pane').forEach(p => p.classList.remove('active'));
-      document.getElementById('portal-bookings').classList.add('active');
-      renderPortalDashboard();
-    }, 1000);
-  };
 }
-
-window.removeItemFromCart = removeItemFromCart;
 
 // ==========================================
 // CONSULTATIONS STEPPER FORM
@@ -928,6 +865,25 @@ function setupConsultFormStepper() {
       modal.querySelectorAll('[data-group="visit-type"]').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
       consultData.visitType = card.dataset.value;
+      
+      const diagnosticsField = document.getElementById('diagnostics-field');
+      const specialtyField = document.getElementById('specialty-field');
+      
+      if (consultData.visitType === 'diagnostics') {
+        if (diagnosticsField) diagnosticsField.style.display = 'block';
+        if (specialtyField) specialtyField.style.display = 'none';
+        
+        // If consult-test is empty, prefill with complete care package
+        const consultTest = document.getElementById('consult-test');
+        if (consultTest && !consultTest.value) {
+          consultTest.value = 'Swasthfit Complete Care Package';
+        }
+      } else {
+        if (diagnosticsField) diagnosticsField.style.display = 'none';
+        if (specialtyField) specialtyField.style.display = 'block';
+      }
+      
+      updateSlotOptions(consultData.visitType);
     });
   });
 
@@ -948,7 +904,11 @@ function setupConsultFormStepper() {
 
 function validateStep(step) {
   if (step === 1) {
-    consultData.specialty = document.getElementById('consult-specialty').value;
+    if (consultData.visitType === 'diagnostics') {
+      consultData.specialty = document.getElementById('consult-test').value || 'Swasthfit Complete Care Package';
+    } else {
+      consultData.specialty = document.getElementById('consult-specialty').value;
+    }
     return true;
   }
   if (step === 2) {
@@ -1015,6 +975,13 @@ function resetConsultStepper() {
   });
   consultData.visitType = 'clinic';
   
+  const diagnosticsField = document.getElementById('diagnostics-field');
+  const specialtyField = document.getElementById('specialty-field');
+  if (diagnosticsField) diagnosticsField.style.display = 'none';
+  if (specialtyField) specialtyField.style.display = 'block';
+  
+  updateSlotOptions('clinic');
+  
   const dateInput = document.getElementById('consult-date');
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1022,27 +989,54 @@ function resetConsultStepper() {
 }
 
 function processConsultBooking() {
-  const bookingId = `VAIB-${Math.floor(1000 + Math.random() * 9000)}`;
+  const bookingId = (consultData.visitType === 'diagnostics' ? 'LAB-' : 'VAIB-') + Math.floor(1000 + Math.random() * 9000);
+  
+  let bookingPrice = 500;
+  let displayType = 'Noida Clinic Visit';
+  
+  if (consultData.visitType === 'video') {
+    displayType = 'Video Consultation';
+  } else if (consultData.visitType === 'diagnostics') {
+    displayType = 'Home Lab Sample';
+    
+    // Find price of package or test
+    const pkg = DIAGNOSTIC_PACKAGES.find(p => p.name === consultData.specialty);
+    const test = INDIVIDUAL_TESTS.find(t => t.name === consultData.specialty);
+    bookingPrice = pkg ? pkg.price : (test ? test.price : 299);
+  }
   
   const newBooking = {
     id: bookingId,
-    type: 'consultation',
+    type: consultData.visitType === 'diagnostics' ? 'diagnostics' : 'consultation',
     specialty: consultData.specialty,
-    visitType: consultData.visitType === 'clinic' ? 'Noida Clinic Visit' : 'Video Consultation',
+    tests: consultData.visitType === 'diagnostics' ? [consultData.specialty] : [],
+    visitType: displayType,
     date: consultData.date,
     time: consultData.slot,
-    price: 500,
-    status: 'Confirmed'
+    price: bookingPrice,
+    status: consultData.visitType === 'diagnostics' ? 'Phlebotomist Assigned' : 'Confirmed'
   };
   
   bookings.push(newBooking);
   
   document.getElementById('confirm-id').textContent = bookingId;
+  
+  const specialtyLabel = document.getElementById('confirm-specialty').previousElementSibling;
+  if (specialtyLabel) {
+    specialtyLabel.textContent = consultData.visitType === 'diagnostics' ? 'Selected Test:' : 'Specialty:';
+  }
   document.getElementById('confirm-specialty').textContent = consultData.specialty;
-  document.getElementById('confirm-type').textContent = consultData.visitType === 'clinic' ? 'Noida Clinic Visit' : 'Video Consultation';
+  document.getElementById('confirm-type').textContent = displayType;
   document.getElementById('confirm-slot').textContent = `${consultData.date} at ${consultData.slot}`;
   
-  showToast(`Clinic consult slot confirmed! Booking ID: ${bookingId}`, 'success');
+  const feeLabel = document.getElementById('confirm-fee-label');
+  const feeValue = document.getElementById('confirm-fee');
+  if (feeLabel && feeValue) {
+    feeLabel.textContent = consultData.visitType === 'diagnostics' ? 'Diagnostic Fee:' : 'Consultation Fee:';
+    feeValue.textContent = `₹${bookingPrice}`;
+  }
+  
+  showToast(`${displayType} booking confirmed! Booking ID: ${bookingId}`, 'success');
 }
 
 // ==========================================

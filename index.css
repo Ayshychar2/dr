@@ -41,21 +41,7 @@
   --font-body: 'Inter', sans-serif;
 }
 
-/* Dark Mode Support */
-body.dark-mode {
-  --bg-main: hsl(220, 30%, 6%);
-  --bg-card: hsl(220, 25%, 10%);
-  --bg-card-glass: rgba(22, 28, 40, 0.9);
-  --text-main: hsl(210, 30%, 94%);
-  --text-muted: hsl(220, 12%, 65%);
-  --border-color: hsl(220, 20%, 16%);
-  --shadow-md: 0 10px 32px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.45);
-  --secondary: hsl(231, 80%, 90%);
-  --secondary-light: hsl(231, 40%, 80%);
-  --secondary-bg: hsl(220, 25%, 14%);
-  --primary-bg: hsl(231, 35%, 15%);
-}
+
 
 /* Basic Resets & Rescale */
 * {
