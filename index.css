@@ -420,6 +420,18 @@ button {
   animation: slide-up-fade 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.hero-slide .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--light);
+  background: transparent;
+}
+
+.hero-slide .btn-secondary:hover {
+  background-color: var(--light);
+  color: var(--dark) !important;
+  border-color: var(--light);
+}
+
 @keyframes slide-up-fade {
   from {
     opacity: 0;
@@ -1151,6 +1163,8 @@ body.dark-mode .pkg-price-current {
 
 .it-tabs {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin-top: 12px;
 }
@@ -2141,6 +2155,12 @@ body.dark-mode .it-tab-btn.active {
   }
   .tests-container-grid {
     grid-template-columns: 1fr;
+  }
+  .it-tabs {
+    justify-content: center;
+  }
+  .individual-tests-box {
+    padding: 24px 16px;
   }
   .portal-modal-content {
     grid-template-columns: 1fr;
