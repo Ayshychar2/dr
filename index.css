@@ -2182,13 +2182,36 @@ body.dark-mode .it-tab-btn.active {
   }
   .nav-menu {
     display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-card);
+    border-bottom: 1.5px solid var(--border-color);
+    padding: 24px;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+  }
+  .nav-menu.active {
+    display: flex;
+  }
+  .nav-link {
+    display: block;
+    padding: 8px 0;
+    width: 100%;
   }
   .mobile-nav-toggle {
     display: block;
     color: var(--text-main);
   }
   .hero-title {
-    font-size: 2.6rem;
+    font-size: clamp(2rem, 8vw, 3rem);
+    letter-spacing: -1px;
+  }
+  .floating-card {
+    display: none; /* Hide floating cards on mobile to prevent overflow */
   }
   .about-title {
     font-size: 2rem;
@@ -2207,20 +2230,66 @@ body.dark-mode .it-tab-btn.active {
   }
   .portal-modal-content {
     grid-template-columns: 1fr;
+    height: 90vh;
   }
   .portal-sidebar {
     padding: 16px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
   .ps-profile {
     margin-bottom: 0;
+    justify-content: center;
   }
   .ps-menu {
-    display: none;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .ps-menu::-webkit-scrollbar {
+    height: 4px;
+  }
+  .ps-menu::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: var(--radius-pill);
+  }
+  .ps-menu-btn {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    width: auto;
+  }
+  #portal-logout-btn {
+    align-self: center;
+    width: auto;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    padding: 6px 12px;
   }
   .footer-top {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .image-stack-container {
+    height: 320px;
+  }
+  .opening-hours-card {
+    width: 90%;
+    max-width: 280px;
+    bottom: -50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-drawer {
+    width: 100%;
+    right: -100%;
   }
 }

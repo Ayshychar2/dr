@@ -461,6 +461,22 @@ function setupEventListeners() {
     });
   }
 
+  // Mobile Navigation Toggle
+  const mobileToggle = document.getElementById('mobile-toggle');
+  const navMenu = document.querySelector('.nav-menu');
+  if (mobileToggle && navMenu) {
+    mobileToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+    
+    // Close menu when clicking a link
+    navMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+      });
+    });
+  }
+
   // Clinic consultation booking modal triggers
   const openConsultBtn = document.getElementById('consult-trigger-nav');
   const cardConsultBtn = document.getElementById('card-consult');
