@@ -9,6 +9,14 @@
 </head>
 <body>
 
+  <!-- Announcement Bar -->
+  <div class="announcement-bar" id="announcement-bar">
+    <div class="container ab-container">
+      <span class="ab-text">🔬 Free Diagnostic Home Sample Collection in Noida | Book Noida Clinic Visits Online</span>
+      <button class="ab-close-btn" id="ab-close" aria-label="Close Announcement">&times;</button>
+    </div>
+  </div>
+
   <!-- Sticky Glassmorphic Header -->
   <header class="header" id="header">
     <div class="container header-container">
@@ -55,9 +63,10 @@
     <div class="hero-slides-container" id="hero-slides-container">
       
       <!-- Slide 1: Home Diagnostics -->
-      <div class="hero-slide active" data-slide="0">
-        <div class="container hero-grid">
-          <div class="hero-content">
+      <div class="hero-slide active" data-slide="0" style="background-image: url('assets/diagnostics_hero.png');">
+        <div class="hero-slide-overlay"></div>
+        <div class="container hero-overlay-container">
+          <div class="hero-overlay-card">
             <div class="badge badge-primary hero-tag">
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
               Home Diagnostics & Blood Tests
@@ -77,32 +86,14 @@
               <button class="tag-btn" data-search="Complete Blood Count">CBC Test</button>
             </div>
           </div>
-
-          <div class="hero-image-pane">
-            <div class="hero-img-bg"></div>
-            <img src="assets/diagnostics_hero.png" alt="Diagnostics Lab Testing Illustration" class="hero-slider-img">
-            <div class="floating-card fc-1">
-              <div class="fc-icon">⏱️</div>
-              <div class="fc-text">
-                <span class="fc-label">Reports Delivery</span>
-                <strong class="fc-value">Within 6 Hours</strong>
-              </div>
-            </div>
-            <div class="floating-card fc-2">
-              <div class="fc-icon">🔬</div>
-              <div class="fc-text">
-                <span class="fc-label">Accreditation</span>
-                <strong class="fc-value">NABL Certified</strong>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
       <!-- Slide 2: Noida Clinic Consultations -->
-      <div class="hero-slide" data-slide="1">
-        <div class="container hero-grid">
-          <div class="hero-content">
+      <div class="hero-slide" data-slide="1" style="background-image: url('assets/clinic_hero.png');">
+        <div class="hero-slide-overlay"></div>
+        <div class="container hero-overlay-container">
+          <div class="hero-overlay-card">
             <div class="badge badge-primary hero-tag">
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
               Physical Noida Clinic
@@ -122,36 +113,14 @@
               <button class="tag-btn" data-search="Pediatrics">Pediatrics</button>
             </div>
           </div>
-
-          <div class="hero-image-pane">
-            <div class="hero-img-bg"></div>
-            <img src="assets/clinic_hero.png" alt="Clinical Doctor Consultation Noida Illustration" class="hero-slider-img">
-            <div class="floating-card fc-1">
-              <div class="fc-avatars">
-                <span class="fc-avatar" style="background-color: #3b5998;">👨‍⚕️</span>
-                <span class="fc-avatar" style="background-color: #4060ef;">👩‍⚕️</span>
-                <span class="fc-avatar" style="background-color: #f1f5f9;">🩺</span>
-              </div>
-              <div class="fc-text">
-                <span class="fc-label">Noida Sector 15</span>
-                <strong class="fc-value">Talk to Dr. Vaibhav</strong>
-              </div>
-            </div>
-            <div class="floating-card fc-2">
-              <div class="fc-icon">🕒</div>
-              <div class="fc-text">
-                <span class="fc-label">Average Wait</span>
-                <strong class="fc-value">15-Min Slots</strong>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
       <!-- Slide 3: Telehealth Video Consultations -->
-      <div class="hero-slide" data-slide="2">
-        <div class="container hero-grid">
-          <div class="hero-content">
+      <div class="hero-slide" data-slide="2" style="background-image: url('assets/telehealth_hero.png');">
+        <div class="hero-slide-overlay"></div>
+        <div class="container hero-overlay-container">
+          <div class="hero-overlay-card">
             <div class="badge badge-primary hero-tag">
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm9 3h-6v-2h6v2zm0-4h-6v-2h6v2z"/></svg>
               Telehealth Virtual Care
@@ -170,25 +139,6 @@
               <button class="tag-btn" data-search="Lipid Profile">Prescriptions</button>
             </div>
           </div>
-
-          <div class="hero-image-pane">
-            <div class="hero-img-bg"></div>
-            <img src="assets/telehealth_hero.png" alt="Telehealth Video Consultation Illustration" class="hero-slider-img">
-            <div class="floating-card fc-1">
-              <div class="fc-icon">📹</div>
-              <div class="fc-text">
-                <span class="fc-label">Virtual Care</span>
-                <strong class="fc-value">Secure Video Link</strong>
-              </div>
-            </div>
-            <div class="floating-card fc-2">
-              <div class="fc-icon">🔒</div>
-              <div class="fc-text">
-                <span class="fc-label">Data Security</span>
-                <strong class="fc-value">100% Confidential</strong>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -196,6 +146,7 @@
     
     <!-- Hero Slider Dots -->
     <div class="hero-dots-container" id="hero-dots"></div>
+  </section>r" id="hero-dots"></div>
   </section>
 
   <!-- Quick Actions Grid -->
@@ -555,7 +506,7 @@
           <!-- Step 1: Visit Type & Specialty -->
           <div class="step-pane active" data-step="1">
             <h4 style="margin-bottom: 15px; text-align: center;">Select Appointment Type</h4>
-            <div class="option-select-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div class="option-select-grid">
               <div class="select-card active" data-value="clinic" data-group="visit-type">
                 <span>🏥</span>
                 <h4>Noida Clinic Visit</h4>

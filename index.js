@@ -457,18 +457,39 @@ function setupEventListeners() {
     });
   }
 
-  // Mobile Navigation Toggle
+  // Announcement Bar dismiss handler
+  const abClose = document.getElementById('ab-close');
+  const abBar = document.getElementById('announcement-bar');
+  if (abClose && abBar) {
+    abClose.addEventListener('click', () => {
+      abBar.style.display = 'none';
+    });
+  }
+
+  // Mobile Navigation Toggle with Icon Animation
   const mobileToggle = document.getElementById('mobile-toggle');
   const navMenu = document.querySelector('.nav-menu');
   if (mobileToggle && navMenu) {
     mobileToggle.addEventListener('click', () => {
-      navMenu.classList.toggle('active');
+      const isActive = navMenu.classList.toggle('active');
+      const iconSvg = mobileToggle.querySelector('svg');
+      if (iconSvg) {
+        if (isActive) {
+          iconSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>`;
+        } else {
+          iconSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>`;
+        }
+      }
     });
     
     // Close menu when clicking a link
     navMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         navMenu.classList.remove('active');
+        const iconSvg = mobileToggle.querySelector('svg');
+        if (iconSvg) {
+          iconSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>`;
+        }
       });
     });
   }
