@@ -14,7 +14,7 @@ const SPECIALTIES = [
 const DIAGNOSTIC_PACKAGES = [
   {
     id: 'pkg-basic',
-    name: 'Vaibhav Dental Basic Care',
+    name: 'Kavita Dental Basic Care',
     originalPrice: 2499,
     price: 999,
     savings: '60%',
@@ -27,7 +27,7 @@ const DIAGNOSTIC_PACKAGES = [
   },
   {
     id: 'pkg-comprehensive',
-    name: 'Vaibhav Smile Design Package',
+    name: 'Kavita Smile Design Package',
     originalPrice: 7499,
     price: 2999,
     savings: '60%',
@@ -40,7 +40,7 @@ const DIAGNOSTIC_PACKAGES = [
   },
   {
     id: 'pkg-senior',
-    name: 'Vaibhav Dental Implant Profile',
+    name: 'Kavita Dental Implant Profile',
     originalPrice: 34999,
     price: 14999,
     savings: '57%',
@@ -63,6 +63,37 @@ const INDIVIDUAL_TESTS = [
   { id: 'test-lft', name: 'Premium Dental Implant', price: 17999, desc: 'Titanium root replacement post with abutment.', category: 'restorative' },
   { id: 'test-kft', name: 'Clear Aligners Consultation', price: 1999, desc: '3D scanning and custom transparent alignment planning.', category: 'cosmetic' }
 ];
+
+const CONCERNS = {
+  toothache: {
+    title: 'Root Canal Treatment (RCT)',
+    price: 2499,
+    desc: 'Deep tooth decay or infections inside the tooth pulp require removal of infected tissue and sealing to relieve severe pain permanently. Safe, sterile, and single-sitting treatment under Dr. Kavita.',
+    solution: 'Single-Sitting Painless RCT',
+    badge: 'Restorative'
+  },
+  yellow: {
+    title: 'Teeth Whitening (Bleaching)',
+    price: 4499,
+    desc: 'In-office clinical Zoom whitening session to remove coffee, food, tobacco, or age-related enamel stains. Whitens up to 8 shades in a single session with long-lasting aesthetic brilliance.',
+    solution: 'Clinical Zoom Bleaching',
+    badge: 'Cosmetic'
+  },
+  bleeding: {
+    title: 'Scaling & Polish',
+    price: 799,
+    desc: 'Ultrasonic removal of hardened bacterial plaque, calculus, and tartar below the gumline to treat bleeding gums, gingivitis, bad breath, and surface discoloration.',
+    solution: 'Deep Scaling & Gum Polish',
+    badge: 'Preventive'
+  },
+  missing: {
+    title: 'Premium Dental Implant',
+    price: 17999,
+    desc: 'Missing or broken teeth are restored permanently using high-grade biocompatible titanium posts that fuse with the jawbone, topped with a custom Zirconia ceramic crown.',
+    solution: 'Titanium Dental Implant',
+    badge: 'Implantology'
+  }
+};
 
 const MOCK_REPORTS = [
   {
@@ -87,7 +118,7 @@ const MOCK_REPORTS = [
 const MOCK_PRESCRIPTIONS = [
   {
     id: 'rx-2091',
-    doctor: 'Dr. Vaibhav, DDS (Endodontist)',
+    doctor: 'Dr. Kavita, DDS (Endodontist)',
     date: 'June 05, 2026',
     diagnosis: 'Localized Pulpitis & Mild Gum Inflammation',
     medicines: [
@@ -105,29 +136,29 @@ const TESTIMONIALS = [
     specialty: "Visited Noida Clinic for Root Canal",
     stars: 5,
     avatar: "AS",
-    quote: "Dr. Vaibhav performed a single-sitting root canal treatment completely painlessly. I was terrified of dental chairs, but his comforting attitude and high-tech setup made it a breeze!"
+    quote: "Dr. Kavita performed a single-sitting root canal treatment completely painlessly. I was terrified of dental chairs, but her comforting attitude and high-tech setup made it a breeze!"
   },
   {
     name: "Sunita Rao",
     specialty: "Smile Design & Whitening Customer",
     stars: 5,
     avatar: "SR",
-    quote: "Highly recommend the Vaibhav Smile Design Package. The teeth whitening and scaling results are amazing. My smile is easily 3-4 shades brighter, and the cost was very reasonable."
+    quote: "Highly recommend the Kavita Smile Design Package. The teeth whitening and scaling results are amazing. My smile is easily 3-4 shades brighter, and the cost was very reasonable."
   },
   {
     name: "Vikram Malhotra",
     specialty: "Orthodontic Aligner Patient",
     stars: 5,
     avatar: "VM",
-    quote: "Very professional consultation for clear aligners. Dr. Vaibhav used a 3D intraoral scanner to show me the treatment roadmap before starting. Noida clinic is top-notch."
+    quote: "Very professional consultation for clear aligners. Dr. Kavita used a 3D intraoral scanner to show me the treatment roadmap before starting. Noida clinic is top-notch."
   }
 ];
 
 // Active State Storage
 let cart = [];
 let bookings = [
-  { id: 'VAIB-9921', type: 'consultation', specialty: 'General Dentistry', visitType: 'Noida Clinic Visit', date: '2026-06-18', time: '11:00 AM - 12:00 PM', price: 500, status: 'Confirmed' },
-  { id: 'LAB-4819', type: 'diagnostics', tests: ['Vaibhav Smile Design Package'], date: '2026-06-19', time: '09:00 AM - 11:00 AM', price: 2999, status: 'Scheduled' }
+  { id: 'DENT-9921', type: 'consultation', specialty: 'General Dentistry', visitType: 'Noida Clinic Visit', date: '2026-06-18', time: '11:00 AM - 12:00 PM', price: 500, status: 'Confirmed' },
+  { id: 'LAB-4819', type: 'diagnostics', tests: ['Kavita Smile Design Package'], date: '2026-06-19', time: '09:00 AM - 11:00 AM', price: 2999, status: 'Scheduled' }
 ];
 
 // ==========================================
@@ -141,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupHeroSlider();
   setupTestimonialSlider();
   setupEventListeners();
+  renderConcernRecommendation('toothache');
   
   // Set date limits
   const tomorrow = new Date();
@@ -151,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (consultDateInput) consultDateInput.min = tomorrowStr;
 });
 
-// Render package grids with improved pricing indicators
+// Render package grids
 function renderWellnessPackages() {
   const container = document.getElementById('packages-grid');
   if (!container) return;
@@ -254,13 +286,12 @@ function setupHeroSlider() {
   
   if (slides.length === 0 || !dotsContainer) return;
 
-  // Render Hero slider dots dynamically
   dotsContainer.innerHTML = Array.from(slides).map((_, idx) => `
     <button class="hero-dot ${idx === 0 ? 'active' : ''}" data-slide="${idx}" aria-label="Slide ${idx+1}"></button>
   `).join('');
 
   let currentHeroSlide = 0;
-  let heroInterval = setInterval(nextSlide, 7000); // Auto-advance every 7 seconds
+  let heroInterval = setInterval(nextSlide, 7000);
 
   function showSlide(index) {
     if (index >= slides.length) index = 0;
@@ -302,7 +333,6 @@ function setupHeroSlider() {
     }
   });
 
-  // Noida Clinic Slide book triggers
   document.body.addEventListener('click', (e) => {
     if (e.target.classList.contains('hero-book-clinic-trigger')) {
       document.getElementById('consult-specialty').value = 'General Dentistry';
@@ -313,7 +343,6 @@ function setupHeroSlider() {
       document.getElementById('consult-specialty').value = 'General Dentistry';
       resetConsultStepper();
       
-      // Select video option card in Step 1
       const modal = document.getElementById('consult-modal');
       modal.querySelectorAll('[data-group="visit-type"]').forEach(c => {
         if (c.dataset.value === 'video') c.classList.add('active');
@@ -395,7 +424,7 @@ function setupTestimonialSlider() {
 }
 
 // ==========================================
-// TOASTS & BADGES
+// TOASTS
 // ==========================================
 
 function showToast(message, type = 'success') {
@@ -415,6 +444,30 @@ function showToast(message, type = 'success') {
     toast.style.animation = 'slide-in-right 0.3s ease reverse forwards';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
+}
+
+// ==========================================
+// CONCERNS FINDER RENDERING
+// ==========================================
+
+function renderConcernRecommendation(key) {
+  const container = document.getElementById('concern-recommendation');
+  if (!container) return;
+  
+  const item = CONCERNS[key];
+  if (!item) return;
+  
+  container.innerHTML = `
+    <span class="badge badge-accent" style="align-self: flex-start;">${item.badge} Solution</span>
+    <h3 class="crp-title">Recommended Treatment</h3>
+    <p class="crp-solution">${item.solution}</p>
+    <p class="crp-details">${item.desc}</p>
+    <div class="crp-price-row">
+      <span class="crp-price-label">Estimated Treatment Price:</span>
+      <span class="crp-price">₹${item.price}</span>
+    </div>
+    <button type="button" class="btn btn-primary crp-book-btn" data-treatment="${item.title}">Book This Treatment Slot</button>
+  `;
 }
 
 // ==========================================
@@ -642,6 +695,42 @@ function setupEventListeners() {
     });
   }
 
+  // Concerns Finder Card Clicks (NEW)
+  const concernCards = document.querySelectorAll('.concern-card');
+  concernCards.forEach(card => {
+    card.addEventListener('click', () => {
+      concernCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      renderConcernRecommendation(card.dataset.concern);
+    });
+  });
+
+  // Recommended Treatment Booking handler (NEW)
+  document.body.addEventListener('click', (e) => {
+    if (e.target.classList.contains('crp-book-btn')) {
+      const treatmentName = e.target.dataset.treatment;
+      const procedure = INDIVIDUAL_TESTS.find(t => t.name === treatmentName);
+      if (procedure) {
+        openDiagnosticsBooking(procedure);
+      }
+    }
+  });
+
+  // Smile Gallery Tab toggler (NEW)
+  const galleryTabs = document.querySelectorAll('.gallery-tab-btn');
+  galleryTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      galleryTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      const paneId = `pane-${tab.dataset.pane}`;
+      document.querySelectorAll('.gallery-transformation-pane').forEach(pane => {
+        pane.classList.remove('active');
+      });
+      document.getElementById(paneId).classList.add('active');
+    });
+  });
+
   // Consultation scheduler multi-step stepper
   setupConsultFormStepper();
 
@@ -740,7 +829,7 @@ function setupConsultFormStepper() {
         // If consult-test is empty, prefill with Smile Design Package
         const consultTest = document.getElementById('consult-test');
         if (consultTest && !consultTest.value) {
-          consultTest.value = 'Vaibhav Smile Design Package';
+          consultTest.value = 'Kavita Smile Design Package';
         }
       } else {
         if (diagnosticsField) diagnosticsField.style.display = 'none';
@@ -769,7 +858,7 @@ function setupConsultFormStepper() {
 function validateStep(step) {
   if (step === 1) {
     if (consultData.visitType === 'diagnostics') {
-      consultData.specialty = document.getElementById('consult-test').value || 'Vaibhav Smile Design Package';
+      consultData.specialty = document.getElementById('consult-test').value || 'Kavita Smile Design Package';
     } else {
       consultData.specialty = document.getElementById('consult-specialty').value;
     }
@@ -925,7 +1014,7 @@ function renderPortalBookings() {
   container.innerHTML = bookings.map(b => {
     if (b.type === 'consultation') {
       return `
-        <div style="border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px;">
+        <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span class="badge badge-primary">🏥 Noida Clinic Slot</span>
             <strong style="font-size:0.9rem; color:var(--primary);">${b.status}</strong>
@@ -940,7 +1029,7 @@ function renderPortalBookings() {
       `;
     } else {
       return `
-        <div style="border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px;">
+        <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span class="badge badge-secondary">🦷 Clinic Procedure</span>
             <strong style="font-size:0.9rem; color:var(--primary);">${b.status}</strong>
