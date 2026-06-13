@@ -194,6 +194,10 @@ button {
   color: var(--primary);
 }
 
+.mobile-only-action {
+  display: none;
+}
+
 .nav-menu {
   display: flex;
   gap: 28px;
@@ -2155,15 +2159,19 @@ body.dark-mode .it-tab-btn.active {
   }
   .about-visuals {
     margin-top: 40px;
+    width: 100%;
   }
   .image-stack-container {
     margin: 0 auto;
   }
   .opening-hours-card {
-    right: 50%;
-    bottom: -30px;
-    transform: translateX(50%);
-    animation: float-y 5s ease-in-out infinite alternate;
+    position: relative;
+    bottom: auto;
+    right: auto;
+    left: auto;
+    transform: none;
+    margin: 40px auto 0 auto;
+    animation: none;
   }
   .specialty-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -2201,6 +2209,13 @@ body.dark-mode .it-tab-btn.active {
     display: block;
     padding: 8px 0;
     width: 100%;
+  }
+  .mobile-only-action {
+    display: block;
+  }
+  #portal-trigger,
+  #consult-trigger-nav {
+    display: none; /* Hide header buttons on tablet and mobile */
   }
   .mobile-nav-toggle {
     display: block;
@@ -2277,13 +2292,24 @@ body.dark-mode .it-tab-btn.active {
 }
 
 @media (max-width: 576px) {
+  .logo-text {
+    font-size: 1.1rem;
+    white-space: nowrap;
+  }
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
   .image-stack-container {
-    height: 320px;
+    max-width: 280px;
+    height: 280px;
+    margin: 0 auto;
   }
   .opening-hours-card {
     width: 90%;
     max-width: 280px;
-    bottom: -50px;
+    bottom: auto;
   }
 }
 

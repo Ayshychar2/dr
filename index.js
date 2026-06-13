@@ -491,7 +491,10 @@ function setupEventListeners() {
     document.getElementById('consult-modal').classList.add('active');
   };
 
+  const openConsultBtnMobile = document.getElementById('consult-trigger-mobile');
+
   if (openConsultBtn) openConsultBtn.addEventListener('click', () => openConsultationWizard());
+  if (openConsultBtnMobile) openConsultBtnMobile.addEventListener('click', (e) => { e.preventDefault(); openConsultationWizard(); });
   if (cardConsultBtn) cardConsultBtn.addEventListener('click', () => openConsultationWizard());
   if (closeConsultBtn) closeConsultBtn.addEventListener('click', () => document.getElementById('consult-modal').classList.remove('active'));
   if (consultSuccessClose) consultSuccessClose.addEventListener('click', () => document.getElementById('consult-modal').classList.remove('active'));
@@ -571,7 +574,10 @@ function setupEventListeners() {
     renderPortalDashboard();
   };
   
+  const portalTriggerMobile = document.getElementById('portal-trigger-mobile');
+
   if (portalTrigger) portalTrigger.addEventListener('click', togglePortalModal);
+  if (portalTriggerMobile) portalTriggerMobile.addEventListener('click', (e) => { e.preventDefault(); togglePortalModal(); });
   if (footerPortalBtn) footerPortalBtn.addEventListener('click', (e) => { e.preventDefault(); togglePortalModal(); });
   if (logoutPortalBtn) logoutPortalBtn.addEventListener('click', togglePortalModal);
   if (heroPortalBtn) heroPortalBtn.addEventListener('click', togglePortalModal);
